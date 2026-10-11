@@ -2,7 +2,7 @@ import sqlite3
 import os
 
 # Connect to the database
-db_path = 'db.sqlite3'
+db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db.sqlite3')
 
 if not os.path.exists(db_path):
     print(f"Database not found at {db_path}")

@@ -49,7 +49,7 @@ def test_full_flow():
         print("[OK] Faculty logged in successfully")
     except requests.exceptions.ConnectionError:
         print("[ERROR] Cannot connect to server. Please start the Django server first:")
-        print("        python manage.py runserver")
+        print("        python backend\\manage.py runserver")
         return
     except Exception as e:
         print(f"[ERROR] Login error: {e}")
@@ -196,4 +196,3 @@ if __name__ == '__main__':
         print(f"\n[ERROR] Unexpected error: {e}")
         import traceback
         traceback.print_exc()
-

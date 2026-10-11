@@ -40,22 +40,22 @@ A production-ready attendance management system built with Django backend and mo
 
 ### Steps
 
-1. **Navigate to project directory**
+Run these commands from the project root:
    ```bash
-   cd "e:\otp attendance"
+   cd path\to\Smart-Attendance-System
    ```
 
-2. **Activate virtual environment**
+1. **Activate virtual environment**
    ```bash
    .\venv\Scripts\activate
    ```
 
-3. **Run the development server**
+2. **Run the development server**
    ```bash
-   python manage.py runserver
+   python backend\manage.py runserver
    ```
 
-4. **Access the application**
+3. **Access the application**
    - Open your browser and go to: `http://127.0.0.1:8000`
    - Or open `index.html` directly in your browser
 
@@ -103,27 +103,20 @@ A production-ready attendance management system built with Django backend and mo
 ## Project Structure
 
 ```
-attendance_system/
-├── accounts/              # User management app
-│   ├── models.py         # User, Faculty, Student models
-│   ├── serializers.py    # DRF serializers
-│   ├── views.py          # API views
-│   └── urls.py           # URL routing
-├── attendance/           # Attendance management app
-│   ├── models.py         # Session, OTP, Attendance models
-│   ├── serializers.py    # DRF serializers
-│   ├── views.py          # API views
-│   └── urls.py           # URL routing
-├── static/               # Static files
-│   ├── css/
-│   │   └── styles.css    # Custom styles
-│   └── js/
-│       └── auth.js       # Authentication logic
-├── templates/            # HTML templates
-├── media/                # Uploaded files
-├── *.html                # Frontend pages
-├── manage.py             # Django management script
-└── requirements.txt      # Python dependencies
+project-root/
+├── backend/
+│   ├── accounts/          # User management app
+│   ├── attendance/        # Attendance management app
+│   ├── attendance_system/ # Django project configuration
+│   ├── media/             # Uploaded files
+│   ├── manage.py
+│   └── requirements.txt
+├── frontend/
+│   ├── static/            # CSS and JavaScript assets
+│   └── templates/         # HTML templates served by Django
+├── .env
+├── .gitignore
+└── README.md
 ```
 
 ## Security Features
@@ -141,7 +134,7 @@ Access the Django admin panel at `http://127.0.0.1:8000/admin/`
 
 Create a superuser:
 ```bash
-python manage.py createsuperuser
+python backend\manage.py createsuperuser
 ```
 
 ## Troubleshooting

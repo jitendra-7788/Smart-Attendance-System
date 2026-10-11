@@ -84,9 +84,8 @@ try:
     
 except requests.exceptions.ConnectionError:
     print("[ERROR] Cannot connect to server. Please start Django server:")
-    print("        python manage.py runserver")
+    print("        python backend\\manage.py runserver")
 except Exception as e:
     print(f"[ERROR] Unexpected error: {e}")
     import traceback
     traceback.print_exc()
-
