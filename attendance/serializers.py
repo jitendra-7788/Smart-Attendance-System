@@ -12,6 +12,33 @@ class SessionSerializer(serializers.ModelSerializer):
         fields = ['id', 'course_name', 'session_date', 'session_time', 'otp_enabled', 
                   'faculty_name', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at', 'faculty_name']
+    
+    def validate_course_name(self, value):
+        """Validate course name"""
+        if not value or not value.strip():
+            raise serializers.ValidationError("Course name cannot be empty.")
+        return value.strip()
+    
+    def validate_otp_enabled(self, value):
+        """Ensure otp_enabled is a boolean"""
+        return bool(value)
+    
+    def validate(self, attrs):
+        """Validate session data"""
+        session_date = attrs.get('session_date')
+        session_time = attrs.get('session_time')
+        course_name = attrs.get('course_name')
+        
+        if not course_name or not course_name.strip():
+            raise serializers.ValidationError({"course_name": "Course name is required."})
+        
+        if not session_date:
+            raise serializers.ValidationError({"session_date": "Session date is required."})
+        
+        if not session_time:
+            raise serializers.ValidationError({"session_time": "Session time is required."})
+        
+        return attrs
 
 
 class OTPSerializer(serializers.ModelSerializer):

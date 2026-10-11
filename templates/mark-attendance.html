@@ -155,9 +155,8 @@
                     })
                 });
 
-                const data = await response.json();
-
                 if (response.ok) {
+                    const data = await response.json();
                     showAlert('alertContainer',
                         '<i class="bi bi-check-circle me-2"></i>Attendance marked successfully!',
                         'success');
@@ -168,9 +167,29 @@
                         window.location.href = 'student-dashboard.html';
                     }, 2000);
                 } else {
-                    let errorMsg = data.error || 'Failed to mark attendance';
-                    if (data.otp_code) errorMsg = data.otp_code[0];
-                    if (data.session_id) errorMsg = data.session_id[0];
+                    let errorMsg = 'Failed to mark attendance';
+                    try {
+                        const data = await response.json();
+                        if (data.error) {
+                            errorMsg = data.error;
+                        } else if (data.detail) {
+                            errorMsg = data.detail;
+                        } else if (data.otp_code && Array.isArray(data.otp_code)) {
+                            errorMsg = data.otp_code[0];
+                        } else if (data.session_id && Array.isArray(data.session_id)) {
+                            errorMsg = data.session_id[0];
+                        } else if (typeof data === 'object') {
+                            const errors = Object.entries(data).map(([key, value]) => {
+                                if (Array.isArray(value)) {
+                                    return `${key}: ${value.join(', ')}`;
+                                }
+                                return `${key}: ${value}`;
+                            }).join('; ');
+                            if (errors) errorMsg = errors;
+                        }
+                    } catch (e) {
+                        errorMsg = `Failed to mark attendance (Status: ${response.status})`;
+                    }
 
                     showAlert('alertContainer', errorMsg, 'danger');
 

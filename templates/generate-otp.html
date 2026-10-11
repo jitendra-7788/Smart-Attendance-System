@@ -152,12 +152,32 @@
                     body: JSON.stringify({ session_id: parseInt(sessionId) })
                 });
 
-                const data = await response.json();
-
                 if (response.ok) {
+                    const data = await response.json();
                     displayOTP(data.otp);
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-key me-2"></i>Generate OTP';
                 } else {
-                    showAlert('alertContainer', data.error || 'Failed to generate OTP', 'danger');
+                    let errorMessage = 'Failed to generate OTP';
+                    try {
+                        const data = await response.json();
+                        if (data.error) {
+                            errorMessage = data.error;
+                        } else if (data.detail) {
+                            errorMessage = data.detail;
+                        } else if (typeof data === 'object') {
+                            const errors = Object.entries(data).map(([key, value]) => {
+                                if (Array.isArray(value)) {
+                                    return `${key}: ${value.join(', ')}`;
+                                }
+                                return `${key}: ${value}`;
+                            }).join('; ');
+                            if (errors) errorMessage = errors;
+                        }
+                    } catch (e) {
+                        errorMessage = `Failed to generate OTP (Status: ${response.status})`;
+                    }
+                    showAlert('alertContainer', errorMessage, 'danger');
                     btn.disabled = false;
                     btn.innerHTML = '<i class="bi bi-key me-2"></i>Generate OTP';
                 }

@@ -54,10 +54,8 @@ class StudentRegistrationView(generics.CreateAPIView):
         try:
             faculty = request.user.faculty_profile
         except Faculty.DoesNotExist:
-            return Response(
-                {'error': 'Faculty profile not found'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            # Auto-create faculty profile if it doesn't exist
+            faculty = Faculty.objects.create(user=request.user)
         
         serializer = self.get_serializer(data=request.data, context={'faculty': faculty})
         serializer.is_valid(raise_exception=True)
@@ -211,3 +209,22 @@ class UserProfileView(generics.RetrieveAPIView):
             'user': user_data,
             'profile': profile_data
         })
+
+
+class FacultyStudentsView(generics.ListAPIView):
+    """API endpoint to list students registered by the current faculty"""
+    serializer_class = StudentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.role != 'FACULTY':
+            return Student.objects.none()
+        
+        try:
+            faculty = user.faculty_profile
+        except Faculty.DoesNotExist:
+            # Auto-create faculty profile if it doesn't exist
+            faculty = Faculty.objects.create(user=user)
+        
+        return Student.objects.filter(registered_by=faculty)

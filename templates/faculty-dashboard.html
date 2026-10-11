@@ -61,22 +61,25 @@
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="card stat-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
-                        <div class="card-body">
-                            <h3 id="totalStudents">0</h3>
-                            <p>Registered Students</p>
-                            <i class="bi bi-people"></i>
+                    <a href="view-students.html" class="text-decoration-none">
+                        <div class="card stat-card"
+                            style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                            <div class="card-body">
+                                <h3 id="totalStudents">0</h3>
+                                <p>Registered Students</p>
+                                <i class="bi bi-people"></i>
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <div class="col-md-3">
                     <a href="register-student.html" class="text-decoration-none">
                         <div class="card stat-card"
                             style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
                             <div class="card-body">
-                                <h3><i class="bi bi-plus-circle"></i></h3>
+                                <h3><i class="bi bi-person-plus"></i></h3>
                                 <p>Register Student</p>
-                                <i class="bi bi-person-plus"></i>
+                                <i class="bi bi-person-badge"></i>
                             </div>
                         </div>
                     </a>
@@ -177,11 +180,24 @@
             const user = getUser();
             const profile = getProfile();
 
-            if (user) {
+            if (profile) {
                 document.getElementById('facultyName').textContent = user.first_name || user.username;
             }
 
-            await loadSessions();
+            await Promise.all([loadSessions(), loadStudentCount()]);
+        }
+
+        async function loadStudentCount() {
+            try {
+                const response = await apiRequest('/auth/faculty/students/');
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('totalStudents').textContent = data.length;
+                }
+            } catch (error) {
+                console.error('Error loading students:', error);
+            }
         }
 
         async function loadSessions() {
@@ -192,7 +208,7 @@
                 if (response.ok) {
                     sessions = data;
                     document.getElementById('totalSessions').textContent = sessions.length;
-                    displaySessions(sessions);
+                    displaySessions();
                 }
             } catch (error) {
                 console.error('Error loading sessions:', error);
@@ -204,7 +220,7 @@
             }
         }
 
-        function displaySessions(sessions) {
+        function displaySessions() {
             const container = document.getElementById('sessionsContainer');
 
             if (sessions.length === 0) {
@@ -290,8 +306,27 @@
                         loadSessions();
                     }, 1000);
                 } else {
-                    const data = await response.json();
-                    showAlert('modalAlertContainer', 'Failed to create session', 'danger');
+                    let errorMessage = 'Failed to create session';
+                    try {
+                        const data = await response.json();
+                        if (data.error) {
+                            errorMessage = data.error;
+                        } else if (data.detail) {
+                            errorMessage = data.detail;
+                        } else if (typeof data === 'object') {
+                            // Handle field-specific errors
+                            const errors = Object.entries(data).map(([key, value]) => {
+                                if (Array.isArray(value)) {
+                                    return `${key}: ${value.join(', ')}`;
+                                }
+                                return `${key}: ${value}`;
+                            }).join('; ');
+                            if (errors) errorMessage = errors;
+                        }
+                    } catch (e) {
+                        errorMessage = `Failed to create session (Status: ${response.status})`;
+                    }
+                    showAlert('modalAlertContainer', errorMessage, 'danger');
                 }
             } catch (error) {
                 console.error('Error:', error);

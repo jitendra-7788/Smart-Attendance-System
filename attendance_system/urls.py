@@ -38,6 +38,7 @@ urlpatterns = [
     path('generate-otp.html', TemplateView.as_view(template_name='generate-otp.html'), name='generate-otp'),
     path('mark-attendance.html', TemplateView.as_view(template_name='mark-attendance.html'), name='mark-attendance'),
     path('view-attendance.html', TemplateView.as_view(template_name='view-attendance.html'), name='view-attendance'),
+    path('view-students.html', TemplateView.as_view(template_name='view-students.html'), name='view-students'),
     path('attendance-history.html', TemplateView.as_view(template_name='attendance-history.html'), name='attendance-history'),
 ]
 

@@ -55,12 +55,20 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'accounts.middleware.DisableSessionForAPIMiddleware',  # Disable sessions for API
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# Disable session creation for API endpoints to prevent session collision
+# Sessions are only used for Django admin, not for API authentication
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+# Don't create sessions for API requests - only use JWT
+SESSION_SAVE_EVERY_REQUEST = False
 
 ROOT_URLCONF = 'attendance_system.urls'
 
@@ -158,6 +166,8 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
     ),
+    # Disable session authentication for API - only use JWT
+    'UNAUTHENTICATED_USER': None,
 }
 
 # JWT Settings
@@ -169,6 +179,7 @@ SIMPLE_JWT = {
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
     'AUTH_HEADER_TYPES': ('Bearer',),
+    'UPDATE_LAST_LOGIN': True,
 }
 
 # CORS Settings

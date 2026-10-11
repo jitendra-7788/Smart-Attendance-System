@@ -27,9 +27,9 @@ class Session(models.Model):
 class OTP(models.Model):
     """OTP model for attendance verification"""
     session = models.ForeignKey(Session, on_delete=models.CASCADE, related_name='otps')
-    otp_code = models.CharField(max_length=6)
+    otp_code = models.CharField(max_length=6, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    expires_at = models.DateTimeField()
+    expires_at = models.DateTimeField(null=True, blank=True)
     is_used = models.BooleanField(default=False)
     
     class Meta:
@@ -38,12 +38,16 @@ class OTP(models.Model):
         ordering = ['-created_at']
     
     def save(self, *args, **kwargs):
+        # Always generate OTP code if not set
         if not self.otp_code:
-            # Generate 6-digit OTP
+            # Generate 6-digit OTP (ensuring it's always 6 digits, padding with zeros if needed)
             self.otp_code = ''.join([str(secrets.randbelow(10)) for _ in range(6)])
+        
+        # Always set expiration if not set
         if not self.expires_at:
             # Set expiration to 30 seconds from now
             self.expires_at = timezone.now() + timedelta(seconds=30)
+        
         super().save(*args, **kwargs)
     
     def is_valid(self):
