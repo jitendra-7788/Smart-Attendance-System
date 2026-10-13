@@ -95,10 +95,27 @@ WSGI_APPLICATION = 'attendance_system.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+DB_HOST = config('DB_HOST', default='localhost')
+DB_PORT = config('DB_PORT', default=5432, cast=int)
+DB_NAME = config('DB_NAME', default='postgres')
+DB_USER = config('DB_USER', default='postgres')
+DB_PASSWORD = config('DB_PASSWORD', default='')
+DB_SSLMODE = config(
+    'DB_SSLMODE',
+    default='require' if DB_HOST not in {'localhost', '127.0.0.1'} else 'prefer'
+)
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
+        'OPTIONS': {
+            'sslmode': DB_SSLMODE,
+        },
     }
 }
 

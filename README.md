@@ -24,7 +24,7 @@ A production-ready attendance management system built with Django backend and mo
 - **Django 5.0** - Web framework
 - **Django REST Framework** - API development
 - **Simple JWT** - JWT authentication
-- **SQLite** - Database (easily switchable to PostgreSQL)
+- **PostgreSQL (Supabase)** - Production database backend
 - **Pillow** - Image processing
 
 ### Frontend
@@ -45,17 +45,33 @@ Run these commands from the project root:
    cd path\to\Smart-Attendance-System
    ```
 
-1. **Activate virtual environment**
+1. **Create a local environment file from the example**
+   ```bash
+   copy .env.example .env
+   ```
+   Update the values in `.env` with your Supabase PostgreSQL connection details.
+
+2. **Activate virtual environment**
    ```bash
    .\venv\Scripts\activate
    ```
 
-2. **Run the development server**
+3. **Install dependencies**
+   ```bash
+   pip install -r backend\requirements.txt
+   ```
+
+4. **Run database migrations**
+   ```bash
+   python backend\manage.py migrate
+   ```
+
+5. **Run the development server**
    ```bash
    python backend\manage.py runserver
    ```
 
-3. **Access the application**
+6. **Access the application**
    - Open your browser and go to: `http://127.0.0.1:8000`
    - Or open `index.html` directly in your browser
 
